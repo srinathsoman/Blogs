@@ -11,5 +11,5 @@ create table comment (
 );
 
 CREATE SEQUENCE ID_SEQ
-  START WITH 6
+  START WITH 1
   INCREMENT BY 1;
