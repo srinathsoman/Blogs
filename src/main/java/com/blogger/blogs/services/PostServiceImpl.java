@@ -69,19 +69,20 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public void deletePost(Long id) {
-        try {
-            postRepository.deleteById(id);
-        }
-        catch (EmptyResultDataAccessException e){
-           // log.info("Post trying to be deleted not found with id : "+id);
+
+        log.debug("Deleting post with id: "+id);
+        Optional<Post> postToDelete = postRepository.findById(id);
+        if (!postToDelete.isPresent()){
+            log.info("Post trying to be deleted not found with id : "+id);
             throw new NotFoundException(StatusCodes.POST_TO_DELETE_NOT_FOUND.getStatusCode(),
                     StatusCodes.POST_TO_DELETE_NOT_FOUND.getStatusDescription());
         }
-        catch (IllegalArgumentException e){
-           // log.error("One or more comment exist for the Post. Hence cannot delete");
+        if(!postToDelete.get().getComments().isEmpty()){
+            log.error("One or more comment exist for the Post. Hence cannot delete");
             throw new ExistingCommentException(StatusCodes.COMMENT_EXISTS_FOR_POST.getStatusCode(),
                     StatusCodes.COMMENT_EXISTS_FOR_POST.getStatusDescription());
         }
+        postRepository.deleteById(id);
     }
 
     @Override
