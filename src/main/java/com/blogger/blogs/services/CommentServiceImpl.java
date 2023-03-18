@@ -68,13 +68,13 @@ public class CommentServiceImpl implements CommentService{
     @ExceptionHandler(NotFoundException.class)
     public void deleteComment(Long id) {
 
-        try{
-            commentRepository.deleteById(id);
-        }
-        catch (EmptyResultDataAccessException e){
+        log.debug("Deleting comment with id"+id);
+        Optional<Comment> commentToDelete= commentRepository.findById(id);
+        if(!commentToDelete.isPresent()){
             log.info("Comment trying to be deleted not found . Comment id : " + id);
             throw new NotFoundException(StatusCodes.COMMENT_TO_DELETE_NOT_FOUND.getStatusCode(),
                     StatusCodes.COMMENT_TO_DELETE_NOT_FOUND.getStatusDescription());
-        }
+            }
+        commentRepository.delete(commentToDelete.get());
     }
 }
