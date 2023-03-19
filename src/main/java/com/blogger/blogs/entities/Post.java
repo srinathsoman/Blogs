@@ -2,11 +2,16 @@ package com.blogger.blogs.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Data
+@EntityListeners(AuditingEntityListener.class)
 @SequenceGenerator(name="id_generator",sequenceName="id_seq", allocationSize=1)
 public class Post {
 
@@ -20,5 +25,10 @@ public class Post {
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private List<Comment> comments;
 
+    private Long userId;
+    @CreatedDate
+    private Date createdAt;
+    @LastModifiedDate
+    private Date updatedAt;
 
 }

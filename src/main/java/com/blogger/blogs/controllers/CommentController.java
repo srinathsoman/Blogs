@@ -1,8 +1,6 @@
 package com.blogger.blogs.controllers;
 
-import com.blogger.blogs.dto.AddCommentRequest;
-import com.blogger.blogs.dto.CommentDetails;
-import com.blogger.blogs.dto.CommentInfo;
+import com.blogger.blogs.dto.*;
 import com.blogger.blogs.services.CommentService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -42,8 +41,19 @@ public class CommentController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    CommentDetails addComment(@PathVariable(value = "post_id") final Long postId, @Valid @RequestBody AddCommentRequest addCommentRequest){
-        return commentService.addComment(postId,addCommentRequest);
+    CommentDetails addComment(@PathVariable(value = "post_id") final Long postId,
+                              @Valid @RequestBody AddCommentRequest addCommentRequest,
+                              Authentication authentication){
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return commentService.addComment(postId,addCommentRequest,userContext.getId());
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    CommentDetails updateComment(@Valid @RequestBody UpdateCommentRequest updateCommentRequest,
+                                 Authentication authentication){
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return  commentService.updateComment(updateCommentRequest,userContext.getId());
     }
 
     /**
@@ -62,8 +72,10 @@ public class CommentController {
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    void deleteComment(@PathVariable("id") final Long id){
-        commentService.deleteComment(id);
+    void deleteComment(@PathVariable("id") final Long id,
+                       Authentication authentication){
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        commentService.deleteComment(id,userContext.getId());
     }
 
 }
