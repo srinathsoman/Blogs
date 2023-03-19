@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -29,6 +31,8 @@ import java.util.function.Function;
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     private  final ModelMapper modelMapper;
+
+    private final BlockedListService blockedListService;
 
 
     @Override
@@ -42,10 +46,12 @@ public class PostServiceImpl implements PostService{
 
 
     @Override
-    public Page<PostInfo> getPosts(Pageable pageable) {
+    public Page<PostInfo> getPosts(Pageable pageable, Long userId) {
 
 
         Page<Post> posts = postRepository.findAll(pageable);
+        List<Long> blockedUserIds =blockedListService.getBlockedUserIds(userId);
+        posts=postRepository.findAllByUserIdNotIn(blockedUserIds,pageable);
         Page<PostInfo> postInfos = posts.map(new Function<Post, PostInfo>() {
             @Override
             public PostInfo apply(Post post) {

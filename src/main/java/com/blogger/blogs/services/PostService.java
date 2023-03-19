@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
     PostDetails createPost(@Valid CreatePostRequest createPostRequest,Long userId);
 
-    Page<PostInfo> getPosts(final Pageable pageable);
+    Page<PostInfo> getPosts(final Pageable pageable, Long userId);
 
     PostDetails getPostDetails(Long id);
 

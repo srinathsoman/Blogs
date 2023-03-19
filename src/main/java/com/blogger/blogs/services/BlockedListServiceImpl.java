@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -41,5 +42,14 @@ public class BlockedListServiceImpl implements BlockedListService {
                     StatusCodes.USER_NOT_BLOCKED.getStatusDescription());
         }
         blockedListRepository.delete(blockedListsCurrentEntry.get(0));
+    }
+
+    @Override
+    public List<Long> getBlockedUserIds(Long userId) {
+
+        List<BlockedList> blockedUserList = blockedListRepository.findByUserId(userId);
+        List<Long> blockedUserIds = blockedUserList.stream().
+                map(BlockedList::getBlockedUserId).collect(Collectors.toList());
+        return  blockedUserIds;
     }
 }

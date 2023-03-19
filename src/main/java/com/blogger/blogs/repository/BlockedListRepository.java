@@ -10,4 +10,6 @@ import java.util.List;
 public interface BlockedListRepository extends JpaRepository<BlockedList, Long> {
 
     List<BlockedList> findAllByUserIdAndBlockedUserId(Long userId, Long blockedUserId);
+
+    List<BlockedList> findByUserId(Long userId);
 }

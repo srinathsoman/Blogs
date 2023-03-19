@@ -30,8 +30,8 @@ public class PostController {
      */
     @GetMapping
     Page<PostInfo> getPosts(Pageable pageable, Authentication authentication) {
-
-        return postService.getPosts(pageable);
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return postService.getPosts(pageable,userContext.getId());
     }
 
     /**
