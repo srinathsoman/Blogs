@@ -9,4 +9,6 @@ public interface BlockedListService {
     void unblockUser(Long userId, Long userIdToUnblock);
 
     List<Long> getBlockedUserIds(Long userId);
+
+    Boolean isUserBlocked(Long userId,Long checkBlockedId);
 }

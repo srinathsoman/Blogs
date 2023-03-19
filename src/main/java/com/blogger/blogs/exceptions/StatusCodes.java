@@ -11,6 +11,7 @@ public enum StatusCodes {
     COMMENT_EXISTS_FOR_POST("5004", "The post has an existing comment"),
     UNAUTHORIZED_EDIT_POST("5005", "Only the creator of the post can edit a post"),
     UNAUTHORIZED_DELETE_POST("5006", "Only the creator of the post can delete a post"),
+    AUTHOR_BLOCKED("5007", "The Author of the post is blocked by current user"),
     ALREADY_BLOCKED_USER("7001", "The user is already blocked"),
     USER_NOT_BLOCKED("7002", "The user is not blocked.")
     ;

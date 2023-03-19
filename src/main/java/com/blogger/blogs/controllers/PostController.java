@@ -53,8 +53,8 @@ public class PostController {
      */
     @GetMapping("{id}")
     PostDetails getPostDetails(@PathVariable("id") final Long id, Authentication authentication) {
-
-        return postService.getPostDetails(id);
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return postService.getPostDetails(id,userContext.getId());
     }
 
     /**

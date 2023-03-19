@@ -35,7 +35,8 @@ public class BlockedListServiceImpl implements BlockedListService {
 
     @Override
     public void unblockUser(Long userId, Long userIdToUnblock) {
-        List<BlockedList> blockedListsCurrentEntry =blockedListRepository.findAllByUserIdAndBlockedUserId(userId,userIdToUnblock);
+        List<BlockedList> blockedListsCurrentEntry =blockedListRepository.
+                findAllByUserIdAndBlockedUserId(userId,userIdToUnblock);
         if(blockedListsCurrentEntry.isEmpty()){
             log.info("User is not present in the blocked list");
             throw new NotFoundException(StatusCodes.USER_NOT_BLOCKED.getStatusCode(),
@@ -51,5 +52,12 @@ public class BlockedListServiceImpl implements BlockedListService {
         List<Long> blockedUserIds = blockedUserList.stream().
                 map(BlockedList::getBlockedUserId).collect(Collectors.toList());
         return  blockedUserIds;
+    }
+
+    @Override
+    public Boolean isUserBlocked(Long userId, Long checkBlockedId) {
+        List<BlockedList> blockedListsCurrentEntry =blockedListRepository.
+                findAllByUserIdAndBlockedUserId(userId,checkBlockedId);
+        return !blockedListsCurrentEntry.isEmpty();
     }
 }

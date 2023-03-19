@@ -5,10 +5,7 @@ import com.blogger.blogs.dto.PostDetails;
 import com.blogger.blogs.dto.PostInfo;
 import com.blogger.blogs.dto.UpdatePostRequest;
 import com.blogger.blogs.entities.Post;
-import com.blogger.blogs.exceptions.ExistingCommentException;
-import com.blogger.blogs.exceptions.NotFoundException;
-import com.blogger.blogs.exceptions.StatusCodes;
-import com.blogger.blogs.exceptions.UnauthorizedModificationException;
+import com.blogger.blogs.exceptions.*;
 import com.blogger.blogs.repository.PostRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -65,13 +62,18 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @ExceptionHandler(NotFoundException.class)
-    public PostDetails getPostDetails(Long id)  {
+    public PostDetails getPostDetails(Long id, Long userId)  {
 
         Optional<Post> post = postRepository.findById(id);
         if(!post.isPresent()){
             log.info("Post not found with id" + id);
             throw new NotFoundException(StatusCodes.POST_NOT_FOUND.getStatusCode(),
                     StatusCodes.POST_NOT_FOUND.getStatusDescription());
+        }
+        if(blockedListService.isUserBlocked(userId,post.get().getUserId())){
+            log.info("Author of the Post is blocked ");
+            throw new BlockedUserException(StatusCodes.AUTHOR_BLOCKED.getStatusCode(),
+                    StatusCodes.AUTHOR_BLOCKED.getStatusDescription());
         }
         return modelMapper.map(post.get(),PostDetails.class);
     }

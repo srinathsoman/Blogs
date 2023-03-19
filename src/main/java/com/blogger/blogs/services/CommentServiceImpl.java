@@ -80,8 +80,8 @@ public class CommentServiceImpl implements CommentService{
         }
         if(commentToDelete.get().getUserId()!=userId){
             log.info("The comment trying to be deleted is not owned by the current user. UserId->" + userId);
-            throw new UnauthorizedModificationException(StatusCodes.UNAUTHORIZED_EDIT_COMMENT.getStatusCode(),
-                    StatusCodes.UNAUTHORIZED_EDIT_COMMENT.getStatusDescription());
+            throw new UnauthorizedModificationException(StatusCodes.UNAUTHORIZED_DELETE_COMMENT.getStatusCode(),
+                    StatusCodes.UNAUTHORIZED_DELETE_COMMENT.getStatusDescription());
         }
         commentRepository.delete(commentToDelete.get());
     }
