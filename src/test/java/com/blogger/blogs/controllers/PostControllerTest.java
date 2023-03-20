@@ -1,6 +1,10 @@
 package com.blogger.blogs.controllers;
 import com.blogger.blogs.IntegrationTest;
+import com.blogger.blogs.entities.Post;
+import com.blogger.blogs.repository.PostRepository;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
@@ -9,21 +13,26 @@ import org.springframework.test.context.jdbc.Sql;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@Sql(scripts = { "/data.sql" })
 public class PostControllerTest extends IntegrationTest {
 
+    /*@InjectMocks
+    private final PostRepository postRepository;*/
     private final String AUTHORIZATION_TOKEN_USER_100 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.aSeBDVldL6u4Bz--CVQF2RWsCG9peOP63i5tPR2Sd7o";
+    private final String AUTHORIZATION_TOKEN_USER_101 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDEiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.jkswboFtquoFyIyeNn8ZqIsvG6JsZoMMZl-mr_FfUDY";
 
     /*@BeforeTestClass
-    @Sql({"/data.sql"})
     void initializeData(){
-
+        System.out.println("Initializing Data");
+        Post post = new Post();
+        post.setTitle("Welcome");
+        post.setContent("Welcome to this Blog");
+        post.setUserId(100L);
+        postRepository.save(post);
     }*/
 
     @Test
@@ -59,6 +68,28 @@ public class PostControllerTest extends IntegrationTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", greaterThan(0)));
+    }
+    @Test
+    void editPost() throws Exception{
+        mvc.perform(
+                        put("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"2\",\"title\":\"updated title\",\"content\":\"updated content\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(2)));
+    }
+
+    @Test
+    void unauthorizedEditPost() throws Exception{
+        mvc.perform(
+                        put("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_101)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"2\",\"title\":\"updated title\",\"content\":\"updated content\"}")
+                )
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
