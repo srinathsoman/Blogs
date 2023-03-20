@@ -1,24 +1,16 @@
 package com.blogger.blogs.controllers;
 
 
-import com.blogger.blogs.dto.CreatePostRequest;
-import com.blogger.blogs.dto.PostDetails;
+import com.blogger.blogs.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import com.blogger.blogs.dto.PostInfo;
 import com.blogger.blogs.services.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * This class provides REST APIs associated with operations on Post.
@@ -37,8 +29,9 @@ public class PostController {
      * @return Page<PostInfo>
      */
     @GetMapping
-    Page<PostInfo> getPosts(Pageable pageable) {
-        return postService.getPosts(pageable);
+    Page<PostInfo> getPosts(Pageable pageable, Authentication authentication) {
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return postService.getPosts(pageable,userContext.getId());
     }
 
     /**
@@ -48,8 +41,9 @@ public class PostController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    PostDetails createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
-        return postService.createPost(createPostRequest);
+    PostDetails createPost(@Valid @RequestBody CreatePostRequest createPostRequest, Authentication authentication) {
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return postService.createPost(createPostRequest,userContext.getId());
     }
 
     /**
@@ -58,8 +52,9 @@ public class PostController {
      * @return PostDetails
      */
     @GetMapping("{id}")
-    PostDetails getPostDetails(@PathVariable("id") final Long id) {
-        return postService.getPostDetails(id);
+    PostDetails getPostDetails(@PathVariable("id") final Long id, Authentication authentication) {
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return postService.getPostDetails(id,userContext.getId());
     }
 
     /**
@@ -68,7 +63,15 @@ public class PostController {
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    void deletePost(@PathVariable("id") final Long id) {
-        postService.deletePost(id);
+    void deletePost(@PathVariable("id") final Long id, Authentication authentication) {
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        postService.deletePost(id,userContext.getId());
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    PostDetails updatePost(@Valid @RequestBody UpdatePostRequest updatePostRequest, Authentication authentication) {
+        UserContext userContext = (UserContext) authentication.getPrincipal();
+        return postService.updatePost(updatePostRequest,userContext.getId());
     }
 }
