@@ -24,8 +24,7 @@ public class BlockedListServiceImpl implements BlockedListService {
                 findAllByUserIdAndBlockedUserId(userId,blockedUserId);
         if(blockedListsCurrentEntry.size()>0){
             log.info("The user is already blocked");
-            throw new DuplicateEntryException(StatusCodes.ALREADY_BLOCKED_USER.getStatusCode(),
-                    StatusCodes.ALREADY_BLOCKED_USER.getStatusDescription());
+            return;
         }
         BlockedList blockedList = new BlockedList();
         blockedList.setUserId(userId);
@@ -39,8 +38,7 @@ public class BlockedListServiceImpl implements BlockedListService {
                 findAllByUserIdAndBlockedUserId(userId,userIdToUnblock);
         if(blockedListsCurrentEntry.isEmpty()){
             log.info("User is not present in the blocked list");
-            throw new NotFoundException(StatusCodes.USER_NOT_BLOCKED.getStatusCode(),
-                    StatusCodes.USER_NOT_BLOCKED.getStatusDescription());
+            return;
         }
         blockedListRepository.delete(blockedListsCurrentEntry.get(0));
     }

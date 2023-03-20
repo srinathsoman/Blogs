@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @EntityListeners(AuditingEntityListener.class)
-@SequenceGenerator(name="id_generator",sequenceName="id_seq", allocationSize=1)
+@SequenceGenerator(name="id_generator",sequenceName="post_seq", allocationSize=1)
 public class Post {
 
     @Id

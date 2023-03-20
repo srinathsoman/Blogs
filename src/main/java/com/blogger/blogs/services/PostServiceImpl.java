@@ -61,7 +61,6 @@ public class PostServiceImpl implements PostService{
 
 
     @Override
-    @ExceptionHandler(NotFoundException.class)
     public PostDetails getPostDetails(Long id, Long userId)  {
 
         Optional<Post> post = postRepository.findById(id);
@@ -102,7 +101,6 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @ExceptionHandler(NotFoundException.class)
     public Post getPostById(Long id){
         Optional<Post> post = postRepository.findById(id);
         if(!post.isPresent()){

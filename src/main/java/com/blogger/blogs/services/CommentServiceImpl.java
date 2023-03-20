@@ -56,7 +56,6 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    @ExceptionHandler(NotFoundException.class)
     public CommentDetails getCommentDetails(Long id) {
         Optional<Comment> comment = commentRepository.findById(id);
         if(!comment.isPresent()){
@@ -68,7 +67,6 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    @ExceptionHandler(NotFoundException.class)
     public void deleteComment(Long id, Long userId) {
 
         log.debug("Deleting comment with id"+id);

@@ -11,13 +11,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.Date;
 
 @Entity
-@SequenceGenerator(name="id_seq", allocationSize=1)
+@SequenceGenerator(name="id_generator",sequenceName="comment_seq", allocationSize=1)
 @EntityListeners(AuditingEntityListener.class)
 @Data
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "id_generator")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

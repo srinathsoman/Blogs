@@ -1,7 +1,7 @@
 create table post (
     id bigint not null primary key,
-    title varchar(128),
-    content varchar(128),
+    title varchar(200),
+    content text,
     user_id bigint not null,
     created_at timestamp not null,
     updated_at timestamp not null
@@ -22,6 +22,15 @@ create table blocked_list(
     blocked_user_id bigint not null
 );
 
-CREATE SEQUENCE ID_SEQ
-  START WITH 1
+CREATE SEQUENCE POST_SEQ
+  START WITH 10
   INCREMENT BY 1;
+
+CREATE SEQUENCE COMMENT_SEQ
+  START WITH 10
+  INCREMENT BY 1;
+
+CREATE SEQUENCE BLOCK_SEQ
+  START WITH 10
+  INCREMENT BY 1;
+
