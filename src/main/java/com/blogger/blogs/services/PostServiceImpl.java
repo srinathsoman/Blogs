@@ -46,9 +46,14 @@ public class PostServiceImpl implements PostService{
     public Page<PostInfo> getPosts(Pageable pageable, Long userId) {
 
 
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = null;
         List<Long> blockedUserIds =blockedListService.getBlockedUserIds(userId);
-        posts=postRepository.findAllByUserIdNotIn(blockedUserIds,pageable);
+        if(blockedUserIds.isEmpty()){
+            posts = postRepository.findAll(pageable);
+        }
+        else{
+            posts=postRepository.findAllByUserIdNotIn(blockedUserIds,pageable);
+        }
         Page<PostInfo> postInfos = posts.map(new Function<Post, PostInfo>() {
             @Override
             public PostInfo apply(Post post) {

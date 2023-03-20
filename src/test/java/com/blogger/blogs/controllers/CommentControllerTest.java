@@ -1,6 +1,7 @@
 package com.blogger.blogs.controllers;
 import com.blogger.blogs.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -13,23 +14,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class CommentControllerTest extends IntegrationTest {
+
+    private final String AUTHORIZATION_TOKEN_USER_100 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.aSeBDVldL6u4Bz--CVQF2RWsCG9peOP63i5tPR2Sd7o";
+
     @Test
     void listComments() throws Exception {
-        mvc.perform((get("/posts/{postId}/comments", 1)))
+        mvc.perform((get("/posts/{postId}/comments", 1)
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].comment", hasItem("Kilroy was here")));
     }
 
     @Test
     void getCommentDetails() throws Exception {
-        mvc.perform((get("/posts/{postId}/comments/{commentId}", 1, 4)))
+        mvc.perform((get("/posts/{postId}/comments/{commentId}", 1, 4)
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.comment", equalTo("Kilroy was here")));
     }
 
     @Test
     void getNonExistingComment() throws Exception {
-        mvc.perform((get("/posts/{postId}/comments/{commentId}", 1, 6666)))
+        mvc.perform((get("/posts/{postId}/comments/{commentId}", 1, 6666)
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isNotFound());
     }
 
@@ -37,6 +44,7 @@ public class CommentControllerTest extends IntegrationTest {
     void createComment() throws Exception {
         mvc.perform(
                         post("/posts/{postId}/comments", 1)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"comment\":\"my comment\"}")
                 )
@@ -48,6 +56,7 @@ public class CommentControllerTest extends IntegrationTest {
     void commentTooLong() throws Exception {
         mvc.perform(
                         post("/posts/{postId}/comments", 1)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"comment\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}")
                 )
@@ -58,6 +67,7 @@ public class CommentControllerTest extends IntegrationTest {
     void commentMissing() throws Exception {
         mvc.perform(
                         post("/posts/{postId}/comments", 1)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{}")
                 )
@@ -68,6 +78,7 @@ public class CommentControllerTest extends IntegrationTest {
     void deleteComment() throws Exception {
         mvc.perform(
                         delete("/posts/{postId}/comments/{commentId}", 1, 5)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                 )
                 .andExpect(status().isOk());
     }
@@ -76,6 +87,7 @@ public class CommentControllerTest extends IntegrationTest {
     void deleteNonExistingComment() throws Exception {
         mvc.perform(
                         delete("/posts/{postId}/comments/{commentId}", 1, 9876)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                 )
                 .andExpect(status().isNotFound());
     }
