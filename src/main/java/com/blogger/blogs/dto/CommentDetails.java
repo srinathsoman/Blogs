@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class CommentDetails extends  CommentInfo{
 
-    private String postId;
+    private Long postId;
 }

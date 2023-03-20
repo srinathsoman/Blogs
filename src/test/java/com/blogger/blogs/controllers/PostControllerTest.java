@@ -1,7 +1,10 @@
 package com.blogger.blogs.controllers;
 import com.blogger.blogs.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
+import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -12,10 +15,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 public class PostControllerTest extends IntegrationTest {
+
+    private final String AUTHORIZATION_TOKEN_USER_100 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.aSeBDVldL6u4Bz--CVQF2RWsCG9peOP63i5tPR2Sd7o";
+
+    @BeforeTestClass
+    @Sql({"/data.sql"})
+    void initializeData(){
+
+    }
+
     @Test
     void listPosts() throws Exception {
-        mvc.perform((get("/posts")))
+        mvc.perform((get("/posts").header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].title", hasItem("Welcome")));
     }
