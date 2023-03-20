@@ -12,11 +12,11 @@ import java.util.List;
 @Entity
 @Data
 @EntityListeners(AuditingEntityListener.class)
-@SequenceGenerator(name="id_generator",sequenceName="post_seq", allocationSize=1)
+@SequenceGenerator(name="post_id_generator",sequenceName="post_seq", allocationSize=1)
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_id_generator")
     private Long id;
     private String title;
     private String content;

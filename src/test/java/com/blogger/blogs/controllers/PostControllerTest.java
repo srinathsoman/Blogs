@@ -20,29 +20,32 @@ public class PostControllerTest extends IntegrationTest {
 
     private final String AUTHORIZATION_TOKEN_USER_100 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.aSeBDVldL6u4Bz--CVQF2RWsCG9peOP63i5tPR2Sd7o";
 
-    @BeforeTestClass
+    /*@BeforeTestClass
     @Sql({"/data.sql"})
     void initializeData(){
 
-    }
+    }*/
 
     @Test
     void listPosts() throws Exception {
-        mvc.perform((get("/posts").header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
+        mvc.perform((get("/posts")
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].title", hasItem("Welcome")));
     }
 
     @Test
     void getPostDetails() throws Exception {
-        mvc.perform((get("/posts/1")))
+        mvc.perform((get("/posts/1")
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", equalTo("Welcome")));
     }
 
     @Test
     void getNonExistingPost() throws Exception {
-        mvc.perform((get("/posts/666")))
+        mvc.perform((get("/posts/666")
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isNotFound());
     }
 
@@ -50,6 +53,7 @@ public class PostControllerTest extends IntegrationTest {
     void createPost() throws Exception {
         mvc.perform(
                         post("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"title\":\"new post\",\"content\":\"new content\"}")
                 )
@@ -61,6 +65,7 @@ public class PostControllerTest extends IntegrationTest {
     void titleTooLong() throws Exception {
         mvc.perform(
                         post("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"content\":\"new content\"}")
                 )
@@ -71,6 +76,7 @@ public class PostControllerTest extends IntegrationTest {
     void titleAndContentMissing() throws Exception {
         mvc.perform(
                         post("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{}")
                 )
@@ -81,6 +87,7 @@ public class PostControllerTest extends IntegrationTest {
     void contentMissing() throws Exception {
         mvc.perform(
                         post("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"title\":\"something missing\"}")
                 )
@@ -91,6 +98,7 @@ public class PostControllerTest extends IntegrationTest {
     void deletePost() throws Exception {
         mvc.perform(
                         delete("/posts/2")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                 )
                 .andExpect(status().isOk());
     }
@@ -99,6 +107,7 @@ public class PostControllerTest extends IntegrationTest {
     void deleteNonExistingPost() throws Exception {
         mvc.perform(
                         delete("/posts/9876")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                 )
                 .andExpect(status().isNotFound());
     }
