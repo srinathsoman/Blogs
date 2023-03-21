@@ -8,9 +8,7 @@ import org.springframework.test.context.jdbc.Sql;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CommentControllerTest extends IntegrationTest {
 
     private final String AUTHORIZATION_TOKEN_USER_100 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.aSeBDVldL6u4Bz--CVQF2RWsCG9peOP63i5tPR2Sd7o";
+    private final String AUTHORIZATION_TOKEN_USER_101 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDEiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.jkswboFtquoFyIyeNn8ZqIsvG6JsZoMMZl-mr_FfUDY";
 
     @Test
     void listComments() throws Exception {
@@ -55,12 +54,60 @@ public class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
+    void addCommentForNonExistingPost() throws Exception {
+        mvc.perform(
+                        post("/posts/{postId}/comments", 7)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"comment\":\"my comment\"}")
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateComment() throws Exception {
+        mvc.perform(
+                        put("/posts/{postId}/comments", 1)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"5\",\"comment\":\"I am updating this comment\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(5)));
+    }
+
+    @Test
+    void updateNonExistingComment() throws Exception {
+        mvc.perform(
+                        put("/posts/{postId}/comments", 1)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"1\",\"comment\":\"I am updating this comment\"}")
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void UnauthorizedUpdateComment() throws Exception {
+        mvc.perform(
+                        put("/posts/{postId}/comments", 1)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_101)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"5\",\"comment\":\"I am updating this comment\"}")
+                )
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void commentTooLong() throws Exception {
         mvc.perform(
                         post("/posts/{postId}/comments", 1)
                                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"comment\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}")
+                                .content("{\"comment\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}")
                 )
                 .andExpect(status().isBadRequest());
     }
@@ -76,6 +123,7 @@ public class CommentControllerTest extends IntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+
     @Test
     void deleteComment() throws Exception {
         mvc.perform(
@@ -83,6 +131,15 @@ public class CommentControllerTest extends IntegrationTest {
                                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                 )
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void unauthorizedDeleteComment() throws Exception {
+        mvc.perform(
+                        delete("/posts/{postId}/comments/{commentId}", 1, 5)
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_101)
+                )
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

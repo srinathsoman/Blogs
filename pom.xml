@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.blogger</groupId>
-	<artifactId>blogs</artifactId>
+	<artifactId>Blogs</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>blogs</name>
 	<description>Application to manage blogs and comments</description>

@@ -10,9 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.context.jdbc.Sql;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,6 +42,14 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Test
+    void listPostsExcludingBlocked() throws Exception {
+        mvc.perform((get("/posts")
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_101)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].title", is(not(hasItem("Welcome")))));
+    }
+
+    @Test
     void getPostDetails() throws Exception {
         mvc.perform((get("/posts/1")
                         .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
@@ -52,8 +58,15 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Test
+    void getPostDetailsOfBlockedUser() throws Exception {
+        mvc.perform((get("/posts/1")
+                        .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_101)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void getNonExistingPost() throws Exception {
-        mvc.perform((get("/posts/666")
+        mvc.perform((get("/posts/7")
                         .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)))
                 .andExpect(status().isNotFound());
     }
@@ -82,6 +95,17 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Test
+    void editNonExistingPost() throws Exception{
+        mvc.perform(
+                        put("/posts")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"7\",\"title\":\"updated title\",\"content\":\"updated content\"}")
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void unauthorizedEditPost() throws Exception{
         mvc.perform(
                         put("/posts")
@@ -98,7 +122,13 @@ public class PostControllerTest extends IntegrationTest {
                         post("/posts")
                                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"content\":\"new content\"}")
+                                .content("{\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "\",\"content\":\"new content\"}")
                 )
                 .andExpect(status().isBadRequest());
     }
@@ -135,11 +165,29 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Test
+    void deletePostWithComments() throws Exception {
+        mvc.perform(
+                        delete("/posts/1")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
+                )
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void deleteNonExistingPost() throws Exception {
         mvc.perform(
                         delete("/posts/9876")
                                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_100)
                 )
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void unauthorizedDeletePost() throws Exception {
+        mvc.perform(
+                        delete("/posts/2")
+                                .header(HttpHeaders.AUTHORIZATION,"Bearer "+AUTHORIZATION_TOKEN_USER_101)
+                )
+                .andExpect(status().isUnauthorized());
     }
 }

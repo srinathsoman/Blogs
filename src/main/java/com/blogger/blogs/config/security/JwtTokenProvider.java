@@ -15,14 +15,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtTokenProvider {
 
     private static final long EXPIRATION_TIME = 86400000; // 24 hours
-    private static final String SECRET_KEY = "secret";
     @Value("${jwt.secret}")
     private String secret;
 
     private String getEncodedSecret() {
-        return Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
+        return Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
+    //Method to generate a token. To generate token for specific userIds.
     public String createToken(String username) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + EXPIRATION_TIME);

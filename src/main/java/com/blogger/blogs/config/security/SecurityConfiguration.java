@@ -35,11 +35,6 @@ public class SecurityConfiguration {
                         })
                 .and();
 
-        http = http.authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/health").permitAll()
-                        .anyRequest().authenticated())
-                .httpBasic(withDefaults());
-
         http = http.addFilterBefore(
                 jwtTokenFilter,
                 UsernamePasswordAuthenticationFilter.class);
