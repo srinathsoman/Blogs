@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * This class provides various REST APIs associated with comments
+ * This class provides various REST APIs for operations on comments of a post
  *
  * @author Srinath
  */

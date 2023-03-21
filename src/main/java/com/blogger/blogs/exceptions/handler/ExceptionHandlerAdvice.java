@@ -19,13 +19,6 @@ public class ExceptionHandlerAdvice {
                 .body(blockedUserException.getStatusDescription());
     }
 
-    @ExceptionHandler(DuplicateEntryException.class)
-    public ResponseEntity<Object> handleDuplicateEntryException(DuplicateEntryException duplicateEntryException) {
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(duplicateEntryException.getStatusDescription());
-    }
-
     @ExceptionHandler(ExistingCommentException.class)
     public ResponseEntity<Object> handleExistingCommentException(ExistingCommentException existingCommentException) {
 

@@ -116,7 +116,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostDetails updatePost(UpdatePostRequest updatePostRequest, Long userId) {
+    public PostDetails updatePost(@Valid UpdatePostRequest updatePostRequest, Long userId) {
 
         Optional<Post> existingPost = postRepository.findById(updatePostRequest.getId());
         if(!existingPost.isPresent()){

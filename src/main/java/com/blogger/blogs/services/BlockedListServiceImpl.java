@@ -1,9 +1,6 @@
 package com.blogger.blogs.services;
 
 import com.blogger.blogs.entities.BlockedList;
-import com.blogger.blogs.exceptions.DuplicateEntryException;
-import com.blogger.blogs.exceptions.NotFoundException;
-import com.blogger.blogs.exceptions.StatusCodes;
 import com.blogger.blogs.repository.BlockedListRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

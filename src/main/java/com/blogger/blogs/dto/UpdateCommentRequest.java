@@ -11,7 +11,7 @@ public class UpdateCommentRequest {
     @NotNull
     private Long Id;
 
-    @Size(max = 100, message = "Comment too Long")
+    @Size(max = 160, message = "Comment too Long")
     @NotBlank
     private String comment;
 }
