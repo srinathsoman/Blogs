@@ -22,19 +22,6 @@ public class JwtTokenProvider {
         return Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    //Method to generate a token. To generate token for specific userIds.
-    public String createToken(String username) {
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + EXPIRATION_TIME);
-
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, this.getEncodedSecret())
-                .compact();
-    }
-
     private Long getUserId(Claims claims) {
         return Long.parseLong(claims.getSubject());
     }
