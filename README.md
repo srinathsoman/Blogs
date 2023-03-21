@@ -1,7 +1,13 @@
 # Blogging as a Java Spring-Boot Application
 
-The backend for a blogging platform which supports storing of blogs using RESTful webservices. 
+This application is the backend service for a blogging platform which supports storing of blogs using RESTful webservices. 
 The application is developed using Java, Spring Boot and Postgres.
+Following are the major features of the application.
+- A user can read a post.
+- Enables a user to add/edit/delete blog posts.
+- A user can comment on a post.
+- A user can edit/delete the comment later.
+- A user can block another user so as not to see posts from that user in the future.
 
 This restful backend have got the following end points
 
@@ -44,3 +50,8 @@ This restful backend have got the following end points
 ## Postman Collection
 A postman collection `Blogs.postman_collection.json` is included in the projects folder which could be used to test 
 and validate once the API is up and running.
+
+## API Documentation
+An html api documentation has been updated in the following folder.
+`APIDocumentation-Javadocs/com/blogger/blogs/controllers/package-summary.html`
+To use the documentation open the above file in any browser.
