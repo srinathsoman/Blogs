@@ -12,8 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * This class provides various REST APIs for operations on comments of a post
- *
+ * This class provides various REST APIs for operations on comments of a post.
  * @author Srinath
  */
 @RestController
@@ -24,9 +23,10 @@ public class CommentController {
 
     /**
      * This API is used to fetch paginated list of all comments on a post.
-     * @param postId
-     * @param pageable
-     * @return Page<CommentInfo>
+     * User information has to be passed as a valid JWT Token in header.
+     * @param postId id of post for which comments have to be fetched
+     * @param pageable the paging details
+     * @return Paged list of comments of this post
      */
     @GetMapping
     Page<CommentInfo> getComments(@PathVariable(value = "post_id") final Long postId, Pageable pageable){
@@ -34,10 +34,12 @@ public class CommentController {
     }
 
     /**
-     * The API  adds a comment to a Post
-     * @param postId
-     * @param addCommentRequest
-     * @return CommentDetails
+     * The API  adds a comment to a Post.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param postId id of the post for which comment has to be added.
+     * @param addCommentRequest The details of the comment to be added.
+     * @param authentication current user information to be passed a JWT token in header.
+     * @return CommentDetails including id of the comment created.
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,6 +50,13 @@ public class CommentController {
         return commentService.addComment(postId,addCommentRequest,userContext.getId());
     }
 
+    /**
+     * The API  Edits a comment. Only comment authors can edit the comment.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param updateCommentRequest details about the update on comment.
+     * @param authentication current user information to be passed a JWT token in header.
+     * @return CommentDetails - the updated comment's details.
+     */
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     CommentDetails updateComment(@Valid @RequestBody UpdateCommentRequest updateCommentRequest,
@@ -58,8 +67,9 @@ public class CommentController {
 
     /**
      * The API fetch the details of the comment with given id
-     * @param id
-     * @return CommentDetails
+     * User information has to be passed as a valid JWT Token in header.
+     * @param id id of the comment for which details has to be fetched
+     * @return CommentDetails including comment information, created date and last updated date.
      */
     @GetMapping("{id}")
     CommentDetails getCommentDetails(@PathVariable("id") final Long id){
@@ -67,8 +77,10 @@ public class CommentController {
     }
 
     /**
-     * API to delete a comment with given id
-     * @param id
+     * API to delete a comment with given id.Only authors can delete a comment.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param id id of the comment that has to be deleted
+     * @param authentication current user information to be passed a JWT token in header
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)

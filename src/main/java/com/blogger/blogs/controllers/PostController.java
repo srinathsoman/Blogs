@@ -24,9 +24,11 @@ public class PostController {
     private final PostService postService;
 
     /**
-     * The API fetches the paginated list of all Blog Posts
-     * @param pageable
-     * @return Page<PostInfo>
+     * The API fetches the paginated list of all Blog Posts. The system excludes posts authored by blocked users.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param pageable Paging information
+     * @param authentication current user information to be passed a JWT token in header
+     * @return A paginated list of all posts
      */
     @GetMapping
     Page<PostInfo> getPosts(Pageable pageable, Authentication authentication) {
@@ -35,9 +37,11 @@ public class PostController {
     }
 
     /**
-     * API used to create a new blog post with given details
-     * @param createPostRequest
-     * @return PostDetails
+     * API used to create a new blog post with given details.A Valid authentication is required.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param createPostRequest The details for the post to be created.
+     * @param authentication current user information to be passed a JWT token in header
+     * @return PostDetails - the details of created post including id.
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -47,9 +51,12 @@ public class PostController {
     }
 
     /**
-     * API to fetch the details of a post with given id
-     * @param id
+     * API to fetch the details of a post with given id.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param id The id of post for which details has to be fetched.
+     * @param authentication current user information to be passed a JWT token in header
      * @return PostDetails
+     * @throws org.springframework.web.client.HttpClientErrorException.Forbidden if the requested post is authored by a blocked user.
      */
     @GetMapping("{id}")
     PostDetails getPostDetails(@PathVariable("id") final Long id, Authentication authentication) {
@@ -58,8 +65,10 @@ public class PostController {
     }
 
     /**
-     * API to delete a post with a given id
-     * @param id
+     * API to delete a post with a given id. Only owners can delete a post.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param id the id of the post to be deleted.
+     * @param authentication current user information to be passed a JWT token in header
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -68,6 +77,13 @@ public class PostController {
         postService.deletePost(id,userContext.getId());
     }
 
+    /**
+     * API to edit a post with a given id. Only owners can edit a post.
+     * User information has to be passed as a valid JWT Token in header.
+     * @param updatePostRequest A json with the updated information about the post.
+     * @param authentication current user information to be passed a JWT token in header
+     * @return PostDetails- details of the updated post.
+     */
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     PostDetails updatePost(@Valid @RequestBody UpdatePostRequest updatePostRequest, Authentication authentication) {
