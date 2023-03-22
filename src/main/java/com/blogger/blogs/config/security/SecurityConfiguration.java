@@ -35,6 +35,10 @@ public class SecurityConfiguration {
                         })
                 .and();
 
+        http = http.authorizeHttpRequests((authz) -> authz
+                        .anyRequest().authenticated())
+                .httpBasic(withDefaults());
+
         http = http.addFilterBefore(
                 jwtTokenFilter,
                 UsernamePasswordAuthenticationFilter.class);

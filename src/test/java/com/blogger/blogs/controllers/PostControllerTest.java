@@ -1,13 +1,8 @@
 package com.blogger.blogs.controllers;
 import com.blogger.blogs.IntegrationTest;
-import com.blogger.blogs.entities.Post;
-import com.blogger.blogs.repository.PostRepository;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.*;
@@ -18,20 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = { "/data.sql" })
 public class PostControllerTest extends IntegrationTest {
 
-    /*@InjectMocks
-    private final PostRepository postRepository;*/
     private final String AUTHORIZATION_TOKEN_USER_100 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.aSeBDVldL6u4Bz--CVQF2RWsCG9peOP63i5tPR2Sd7o";
     private final String AUTHORIZATION_TOKEN_USER_101 ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDEiLCJlbWFpbCI6ImpvaG5Aam9obi5jb20ifQ.jkswboFtquoFyIyeNn8ZqIsvG6JsZoMMZl-mr_FfUDY";
-
-    /*@BeforeTestClass
-    void initializeData(){
-        System.out.println("Initializing Data");
-        Post post = new Post();
-        post.setTitle("Welcome");
-        post.setContent("Welcome to this Blog");
-        post.setUserId(100L);
-        postRepository.save(post);
-    }*/
 
     @Test
     void listPosts() throws Exception {
