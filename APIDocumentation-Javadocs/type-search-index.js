@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.blogger.blogs.controllers","l":"BlockedListController"},{"p":"com.blogger.blogs.controllers","l":"CommentController"},{"p":"com.blogger.blogs.controllers","l":"PostController"}];updateSearchResults();
